@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
+]>
+<!-- WK: Set category, IPR, docName -->
+<rfc category="info" docName="draft-wkumari-dnsop-ball-and-chain-00"
+     ipr="trust200902">
+  <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+
+  <?rfc toc="yes" ?>
+
+  <?rfc symrefs="yes" ?>
+
+  <?rfc sortrefs="yes"?>
+
+  <?rfc iprnotified="no" ?>
+
+  <?rfc strict="yes"?>
+
+  <?rfc compact="yes" ?>
+
+  <front>
+    <!-- WK: Set long title. -->
+
+    <title abbrev="BAL Chain">Back Anchor Linking (BAL) and Chain</title>
+
+    <author fullname="Warren Kumari" initials="W." surname="Kumari">
+      <organization>Google</organization>
+
+      <address>
+        <postal>
+          <street>1600 Amphitheatre Parkway</street>
+
+          <city>Mountain View, CA</city>
+
+          <code>94043</code>
+
+          <country>US</country>
+        </postal>
+
+        <email>warren@kumari.net</email>
+      </address>
+    </author>
+
+    <date day="30" month="January" year="2015"/>
+
+    <abstract>
+      <t>This document describes a method for DNSSEC validating resolvers to
+      migrate from a DNSSEC KSK which they already trust to the current KSK,
+      possibly through a chain of intermediate trust anchors.</t>
+
+      <t>[ Ed note: Text inside square brackets ([]) is additional background
+      information, answers to freqently asked questions, general musings, etc.
+      They will be removed before publication.]</t>
+
+      <t>[ This document is being collaborated on in Github at:
+      https://github.com/__URL__. The most recent version of the document,
+      open issues, etc should all be available here. The authors (gratefully)
+      accept pull requests ]</t>
+    </abstract>
+  </front>
+
+  <middle>
+    <section title="Introduction">
+      <t>DNSSEC (<xref target="RFC4034"/>, <xref target="RFC4035"/>)
+      validation requires that the client has the currently used Trust Anchor
+      (KSK), in order to be able to follow the cryptographic chain "downn"
+      from the entry point (usually the root) to the RRset <xref
+      target="RC4034"/> being validated. </t>
+
+      <t>This means that when the KSK is replaced, clients need a (secure)
+      method to learn and install the newer key as the newer trust anchor. We
+      have heard a number of reports that the current process for this, <xref
+      target="RFC5011"/>, is unwieldy and difficult to implement. Much of this
+      may because when <xref target="RFC5011"/> was written, the way the
+      DNSSEC would be deployed (with a single, root KSK trusted by all
+      validators, not many islands) could not be predeicted. As of the writing
+      of this document (March 2018), the DNS Root Trust Anchor/ KSK has not
+      been rolled, and so the RFC5011 codepaths have not been well excercised.
+      <xref target="RFC5011"/> was also designed primarily with security in
+      mind; this security, while admirable, has made the operational aspects
+      harder. Two examples of this include the decision to limit how fast the
+      key can be rolled (primarily the Add Hold-Down Time), and that this
+      process doesn't support a device which has been off-lime through
+      multiple keyrolls learning the new key. These decisions maximize
+      security, but at the expense of agility. </t>
+
+      <t>This document provides an alternate mechanism, which, while less
+      secure, recognizes the operational needs, and provides more flexibility.
+      Operational experiance has shown that there are a large number of DNSSEC
+      validators which are not very well maintained, and which also are unable
+      to complete the RFC5011 process for varioius reasons, for example
+      because they may sit on shelf for many years (e.g consumer CPE), or
+      because they do not have a persitenat, writable filesystem (as is the
+      case for many "containter" type deplyoments). </t>
+
+      <section title="Requirements notation">
+        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+        document are to be interpreted as described in <xref
+        target="RFC2119"/>.</t>
+      </section>
+    </section>
+
+    <section title="Back Anchor Linking (BAL) ">
+      <t>Back Anchor Linking provides a chain of DNSSEC Trust Anchors,
+      allowing a DNSSEC validating resolver to obtain a chain of historical
+      trust anchors from the current trust anchor to one which it trust, and
+      "enter" the chain at this point, using the most current trust anchor
+      which the validator knows to follow to the latest one. This solution is
+      intended to allow implmentations and operators the option to "bootstrap"
+      to the current trust anchor, even if they have been off-line through a
+      series of key roll events. </t>
+
+      <t>The mechanism works be having a chain of signatures, which a
+      validator can from the most recent key which it knows to the currently
+      trusted anchor.</t>
+
+      <t>For the purposes of description/ illustration, we will pretend that
+      the public key for the current trust anchor is 0x1111, and that the hash
+      of this is 0xaaaa, but the previous trust anchor is 0x2222 (and that the
+      hash is 0xbbbb), for the one before that 0x3333 (hashes to 0xcccc), etc.
+      </t>
+
+      <section title="Overview">
+        <t>[ Ed note: We know that the root Key Signing Key signs a Zone
+        Signing Key which signs the actual data RRsets; we are ignoring this
+        for the purpose of this strawman document. The concept still holds,
+        and we will fill in the details in future versions (assuming no-one
+        points at an obvious flaw which makes us drop the whole idea and hang
+        our heads in shame), but for now we are talking about a "spherical
+        cow". ]</t>
+
+        <t>We introduce an additional RR Type, the Historical Signature (type
+        TBD). This The current KSK (public key 0x1111, hash 0xaaaa) signs
+        various data within the zone. We insert a new record into the zone,
+        whose name is simply the hash of the the KSK - in the above example,
+        the name aaaaa. The RDATA of this record is the DNSKEY of the previous
+        record, and (as per normal) is signed with the current KSK private
+        key). The </t>
+      </section>
+    </section>
+
+    <section title="IANA Considerations">
+      <t>This document contains no IANA considerations.Template: Fill this
+      in!</t>
+    </section>
+
+    <section anchor="security" title="Security Considerations">
+      <t>TODO: Fill this out!</t>
+    </section>
+
+    <section title="Acknowledgements">
+      <t>The authors wish to thank some folk.</t>
+    </section>
+  </middle>
+
+  <back>
+    <references title="Normative References">
+      <?rfc include='reference.RFC.2119'?>
+
+      <?rfc include='reference.RFC.4034'?>
+
+      <?rfc include='reference.RFC.4035'?>
+
+      <reference anchor="IANA.AS_Numbers"
+                 target="http://www.iana.org/assignments/as-numbers">
+        <front>
+          <title abbrev="Autonomous System (AS) Numbers">Autonomous System
+          (AS) Numbers</title>
+
+          <author>
+            <organization>IANA</organization>
+          </author>
+
+          <date/>
+        </front>
+      </reference>
+    </references>
+
+    <references title="Informative References">
+      <?rfc include='reference.I-D.draft-ietf-sidr-iana-objects-03.xml'?>
+    </references>
+
+    <section title="Changes / Author Notes.">
+      <t>[RFC Editor: Please remove this section before publication ]</t>
+
+      <t>From -00 to -01</t>
+
+      <t><list style="symbols">
+          <t>Nothing changed in the template!</t>
+        </list></t>
+    </section>
+  </back>
+</rfc>
