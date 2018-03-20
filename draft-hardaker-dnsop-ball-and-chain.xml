@@ -3,7 +3,7 @@
 <!ENTITY rfc2119 PUBLIC "" ".//reference.RFC.2119.xml">
 ]>
 <!-- WK: Set category, IPR, docName -->
-<rfc category="info" docName="draft-wkumari-dnsop-ball-and-chain-00"
+<rfc category="info" docName="draft-hardaker-dnsop-ball-and-chain-00"
      ipr="trust200902">
   <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 
@@ -39,6 +39,24 @@
         </postal>
 
         <email>warren@kumari.net</email>
+      </address>
+    </author>
+
+    <author fullname="Wes Hardaker" initials="W." surname="Hardaker">
+      <organization>USC/ISI</organization>
+
+      <address>
+        <postal>
+          <street>P.O. Box 382</street>
+
+          <city>Davis, CA</city>
+
+          <code>95617</code>
+
+          <country>US</country>
+        </postal>
+
+        <email>ietf@hardakers.net</email>
       </address>
     </author>
 
