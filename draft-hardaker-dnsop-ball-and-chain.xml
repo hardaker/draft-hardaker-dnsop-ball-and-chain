@@ -84,7 +84,7 @@
       validation requires that the client has the currently used Trust Anchor
       (KSK), in order to be able to follow the cryptographic chain "downn"
       from the entry point (usually the root) to the RRset <xref
-      target="RC4034"/> being validated. </t>
+      target="RFC4034"/> being validated. </t>
 
       <t>This means that when the KSK is replaced, clients need a (secure)
       method to learn and install the newer key as the newer trust anchor. We
@@ -180,6 +180,8 @@
       <?rfc include='reference.RFC.4034'?>
 
       <?rfc include='reference.RFC.4035'?>
+
+      <?rfc include='reference.RFC.5011'?>
 
       <reference anchor="IANA.AS_Numbers"
                  target="http://www.iana.org/assignments/as-numbers">
